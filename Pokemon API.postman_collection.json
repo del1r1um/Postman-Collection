@@ -1,0 +1,525 @@
+{
+	"info": {
+		"_postman_id": "1884e07e-64d9-44c0-82d0-067fc1a9246e",
+		"name": "Pokemon API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15149311"
+	},
+	"item": [
+		{
+			"name": "Register trainer",
+			"item": [
+				{
+					"name": "Register Trainer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "{{trainer_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"trainer_token\": \"{{trainer_token}}\",\n    \"email\": \"stranger@thingz.ru\",\n    \"password\": \"Test12qwerty\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/trainers/reg",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trainers",
+								"reg"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activate trainer",
+			"item": [
+				{
+					"name": "Activate Trainer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"trainer_token\": \"{{trainer_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/trainers/confirm_email",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trainers",
+								"confirm_email"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create pokemon",
+			"item": [
+				{
+					"name": "Create pokemon with random name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json();",
+									"pm.collectionVariables.set('pokemon_id', response.id);",
+									"",
+									"pm.test(\"Status code is 201\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Status text is CREATED\", () => {",
+									"    pm.response.to.have.status(\"CREATED\");",
+									"});",
+									"",
+									"pm.test(\"Correct success message\", () => {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Покемон создан');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "{{trainer_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{$randomFirstName}}\",\n    \"photo\": \"https://dolnikov.ru/pokemons/albums/025.png\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/pokemons",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"pokemons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create pokemon with empty name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Status text is BAD REQUEST\", () => {",
+									"    pm.response.to.have.status(\"BAD REQUEST\");",
+									"});",
+									"",
+									"pm.test(\"Correct error message\", () => {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Отсутствует имя покемона(name)');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "d877b574f98f2a2a6b99dc61d93933d2",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\",\n    \"photo\": \"https://dolnikov.ru/pokemons/albums/025.png\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/pokemons",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"pokemons"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Add to pokeball",
+			"item": [
+				{
+					"name": "Add pokemon to pokeball",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status code name is OK\", () => {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "{{trainer_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pokemon_id\": \"{{pokemon_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/trainers/add_pokeball",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trainers",
+								"add_pokeball"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pokemon in pokeball",
+			"item": [
+				{
+					"name": "Pokemon in pokeball",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({",
+									"    url: pm.environment.get(\"host\")+\"/pokemons?in_pokeball=1\"",
+									"},",
+									"(error, response) => {",
+									"    if (error) {",
+									"        console.log(error)",
+									"    }",
+									"    else {",
+									"        var jsonData = response.json();",
+									"        var enemy_pokemon_id = jsonData[3].id;",
+									"        pm.collectionVariables.set('enemy_pokemon_id', enemy_pokemon_id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "{{trainer_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/pokemons?in_pokeball=1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"pokemons"
+							],
+							"query": [
+								{
+									"key": "in_pokeball",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pokemon's battle",
+			"item": [
+				{
+					"name": "Pokemon's battle",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "{{trainer_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"attacking_pokemon\": \"{{pokemon_id}}\",\n    \"defending_pokemon\": \"{{enemy_pokemon_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/battle",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"battle"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Trainer avatar",
+			"item": [
+				{
+					"name": "Buy trainer avatar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "d877b574f98f2a2a6b99dc61d93933d2",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"card_number\": \"6764547645910103\",\n    \"card_csv\": \"125\",\n    \"card_actual\": \"10/23\",\n    \"num\": \"56456\",\n    \"avatar_id\": \"7\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/trainers/change_avatar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"trainers",
+								"change_avatar"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Kill pokemon",
+			"item": [
+				{
+					"name": "Kill pokemon",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "trainer_token",
+								"value": "d877b574f98f2a2a6b99dc61d93933d2",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pokemon_id\": \"{{pokemon_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{host}}/pokemons/kill",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"pokemons",
+								"kill"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get pokemons",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/pokemons?trainer_id=1402",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"pokemons"
+					],
+					"query": [
+						{
+							"key": "trainer_id",
+							"value": "1402"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "https://api.pokemonbattle.me:9104",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "enemy_pokemon_id",
+			"value": ""
+		},
+		{
+			"key": "pokemon_id",
+			"value": ""
+		}
+	]
+}
